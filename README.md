@@ -1,8 +1,5 @@
 # OAuth Micro-Service
 
-
-## Description
-
 This is an OAuth Microservice which will help in authentication/authorisation of users. Other than these basic functionalities, it will allow users to upload their personal files and can give access to third party using this service.
 
 So this is similar to Dropbox or Google drive.

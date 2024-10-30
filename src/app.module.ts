@@ -1,12 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+
+const customConfigs = () => ({
+  // Permission and Group Constants
+  PERMISSION_READ: 'READ',
+  PERMISSION_WRITE: 'WRITE',
+  GROUP_READ_WRITE: 'READ/WRITE',
+  GROUP_READERS: 'READERS',
+  GROUP_BLOCKED: 'BLOCKED',
+});
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
+      load: [customConfigs],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -19,10 +30,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         database: configService.get<string>('OAUTH_PG_DB'),
         entities: [__dirname + '/**/*.entity.{ts,js}'],
         synchronize: false,
-        ssl: true,
+        ssl: configService.get<boolean>('OAUTH_PG_SSL'),
       }),
       inject: [ConfigService],
     }),
+    UsersModule,
   ],
   controllers: [],
   providers: [],
