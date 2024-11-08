@@ -1,9 +1,13 @@
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
+import { getEnvFilePath } from 'src/common/utils';
+
+const envFile = getEnvFilePath();
+console.log('> Using Env File:', envFile);
 
 // Loads only the .env file
-config();
+config({ path: envFile });
 
 // Only fetches the Enviornment Variables
 const configService = new ConfigService();

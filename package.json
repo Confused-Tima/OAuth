@@ -19,13 +19,13 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node --require tsconfig-paths/register ./node_modules/typeorm/cli",
-    "migration:run": "npm run typeorm migration:run -- -d ./src/db/typeorm.config.ts",
+    "migration:run": "OAUTH_ENV=${npm_config_env:-DEV} run typeorm migration:run -- -d ./src/db/typeorm.config.ts",
     "premigration:generate": "if [ -z \"$npm_config_name\" ]; then echo 'Error: --name is required' && exit 1; fi",
-    "migration:generate": "npm run typeorm -- -d ./src/db/typeorm.config.ts migration:generate ./src/db/migrations/$npm_config_name",
+    "migration:generate": "OAUTH_ENV=${npm_config_env:-DEV} npm run typeorm -- -d ./src/db/typeorm.config.ts migration:generate ./src/db/migrations/$npm_config_name",
     "premigration:create": "if [ -z \"$npm_config_name\" ]; then echo 'Error: --name is required' && exit 1; fi",
-    "migration:create": "npm run typeorm -- migration:create ./src/db/migrations/$npm_config_name",
-    "migration:revert": "npm run typeorm -- -d ./src/db/typeorm.config.ts migration:revert",
-    "migration:show": "npm run typeorm -- migration:show -d ./src/db/typeorm.config.ts"
+    "migration:create": "OAUTH_ENV=${npm_config_env:-DEV} npm run typeorm -- migration:create ./src/db/migrations/$npm_config_name",
+    "migration:revert": "OAUTH_ENV=${npm_config_env:-DEV} npm run typeorm -- -d ./src/db/typeorm.config.ts migration:revert",
+    "migration:show": "OAUTH_ENV=${npm_config_env:-DEV} npm run typeorm -- migration:show -d ./src/db/typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
