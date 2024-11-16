@@ -1,5 +1,6 @@
 import {
   Column,
+  Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -8,6 +9,7 @@ import {
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
 
+@Entity()
 export class Group {
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,7 +19,7 @@ export class Group {
 
   @ManyToMany(() => Permission, (permission) => permission.groups)
   @JoinTable()
-  permissions: Permission;
+  permissions: Permission[];
 
   @OneToMany(() => User, (user) => user.group)
   user: User;

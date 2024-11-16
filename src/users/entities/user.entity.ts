@@ -5,10 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Group } from './group.entity';
+import { Country } from './country.entity';
+import { Phone } from './phone.entity';
 
 @Entity()
 export class User {
@@ -31,21 +34,6 @@ export class User {
   @Column('varchar', { length: 100, select: false, nullable: false })
   password: string;
 
-  @Column({ length: 15 })
-  phone: string;
-
-  @Column({ default: false })
-  isPhoneVerfied: boolean;
-
-  @Column({ length: 3 })
-  countryDialingCode: string;
-
-  @Column({ length: 100 })
-  country: string;
-
-  @Column({ length: 5 })
-  countryISOCode: string;
-
   @Column({ default: false })
   isDeleted: boolean;
 
@@ -54,6 +42,12 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne(() => Phone, (phone) => phone.user)
+  phone: Phone;
+
+  @ManyToOne(() => Country, (country) => country.user)
+  country: Country;
 
   @ManyToOne(() => Group, (group) => group.user)
   @JoinColumn()

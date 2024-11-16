@@ -1,5 +1,14 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { CountryDialingCode } from './country-iso-code.entity';
 
+@Entity()
 export class Country {
   @PrimaryGeneratedColumn()
   id: number;
@@ -10,6 +19,9 @@ export class Country {
   @Column('char', { length: 2, nullable: false, unique: true })
   countryISOCode2: string;
 
-  @Column({ length: 3, nullable: false, unique: true })
+  @OneToOne(() => CountryDialingCode, (dialingCode) => dialingCode.country)
   countryDialingCode: string;
+
+  @OneToMany(() => User, (user) => user.country)
+  user: User[];
 }
