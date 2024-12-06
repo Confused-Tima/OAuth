@@ -1,12 +1,13 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { CountryDialingCode } from './country-iso-code.entity';
+import { CountryDialingCode } from './country-dialing-code.entity';
 
 @Entity()
 export class Country {
@@ -20,7 +21,8 @@ export class Country {
   countryISOCode2: string;
 
   @OneToOne(() => CountryDialingCode, (dialingCode) => dialingCode.country)
-  countryDialingCode: string;
+  @JoinColumn()
+  countryDialingCode: CountryDialingCode;
 
   @OneToMany(() => User, (user) => user.country)
   user: User[];

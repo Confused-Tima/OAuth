@@ -2,13 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { CountryDialingCode } from './country-iso-code.entity';
+import { CountryDialingCode } from './country-dialing-code.entity';
 
 @Entity()
 export class Phone {
@@ -31,5 +32,6 @@ export class Phone {
   updatedAt: Date;
 
   @OneToOne(() => User, (user) => user.phone)
+  @JoinColumn()
   user: User;
 }

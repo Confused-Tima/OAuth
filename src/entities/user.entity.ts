@@ -21,7 +21,7 @@ export class User {
   @Column({ length: 50, nullable: false })
   fname: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, nullable: true })
   lname: string;
 
   @Column({ length: 255, nullable: false })
@@ -37,13 +37,13 @@ export class User {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => Phone, (phone) => phone.user)
+  @OneToOne(() => Phone, (phone) => phone.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   phone: Phone;
 
   @ManyToOne(() => Country, (country) => country.user)
