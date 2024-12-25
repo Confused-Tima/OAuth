@@ -16,3 +16,16 @@ export async function hashPassword(password: string): Promise<string> {
     );
   }
 }
+
+export async function verifyPassword(
+  hash: string,
+  password: string,
+): Promise<boolean> {
+  try {
+    return await argon.verify(hash, password);
+  } catch (error) {
+    throw new InternalServerErrorException(
+      `Error during password verification ${error}`,
+    );
+  }
+}

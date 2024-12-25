@@ -24,18 +24,21 @@ export class User {
   @Column({ length: 50, nullable: true })
   lname: string;
 
-  @Column({ length: 255, nullable: false })
+  @Column({ length: 255, nullable: false, unique: true })
   email: string;
 
   @Column({ default: false })
   isEmailVerified: boolean;
 
   @Exclude()
-  @Column('varchar', { length: 100, select: false, nullable: false })
+  @Column('varchar', { length: 100, nullable: false })
   password: string;
 
   @Column({ default: false })
   isDeleted: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;

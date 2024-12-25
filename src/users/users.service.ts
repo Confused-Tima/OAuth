@@ -4,13 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsSelect, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto';
 import { User } from 'src/entities/user.entity';
 import { Country } from '../entities/country.entity';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { UpdateUserPhoneDto } from './dto/update-phone-dto';
 import { hashPassword } from 'src/common/utils';
 
 @Injectable()
@@ -23,16 +22,31 @@ export class UsersService {
   ) {}
 
   /**
-   * Fetches the user based on the given details
+   * Fetches the user based on Email
+   * @param email Unique Email of a user
+   * @returns Promise of User Object
+   */
+  async getUserByEmail(
+    email: string,
+    fields: FindOptionsSelect<User> = {},
+  ): Promise<User> {
+    return await this.userRepo.findOne({
+      where: { email, isDeleted: false },
+      select: fields,
+    });
+  }
+
+  /**
+   * Fetches the user based on unique ID
    * @param id Unique user ID
    * @returns Promise of User Object
    */
-  async getUserByID(id: number): Promise<User> {
-    const user = await this.userRepo.findOne({ where: { id: id } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return user;
+  async getUserByID(id: number, fields: (keyof User)[] = []): Promise<User> {
+    const user = await this.userRepo.findOne({
+      where: { id, isDeleted: false },
+      select: fields,
+    });
+    return user ? user : null;
   }
 
   /**
@@ -63,14 +77,16 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  async update(
-    id: number,
-    updateUserDto: UpdateUserDto,
-    updateUserPhone: UpdateUserPhoneDto,
-  ): Promise<User> {
+  /**
+   * Updates the user with given details
+   * @param id Unique User ID
+   * @param updateUserDto User details to be udpated
+   * @returns Updated user details
+   */
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userRepo.findOne({
       where: { id },
-      relations: ['phone'],
+      relations: ['country'],
     });
 
     if (!user) {
@@ -80,23 +96,32 @@ export class UsersService {
     // Copy the values from request to the actual user
     Object.assign(user, updateUserDto);
 
-    if (user.phone && updateUserPhone.phone) {
-      user.phone.phone = updateUserPhone.phone;
+    if (updateUserDto.country) {
+      const country = await this.countryRepo.findOne({
+        where: { id: updateUserDto.country },
+      });
+
+      if (!country)
+        throw new NotFoundException(
+          `Country with ID ${updateUserDto.country} not found`,
+        );
+
+      user.country = country;
     }
 
     return this.userRepo.save(user);
   }
 
+  /**
+   * Deletes the given user
+   * @param id Unique user ID
+   * @returns True if user was successfully deleted else false
+   */
   async delete(id: number) {
     const result = await this.userRepo.update(
       { id, isDeleted: false },
       { isDeleted: true },
     );
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Existing user with ID ${id} not found`);
-    }
-
-    return true;
+    return result.affected === 0 ? false : true;
   }
 }
